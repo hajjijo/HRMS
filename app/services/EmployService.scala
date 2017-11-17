@@ -36,4 +36,11 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
     }
   }
 
+  def deleteEmploy(employId: Long): Future[String] = {
+    employDao.delete(employId) flatMap {
+      case 0 => Future.successful("""{"ok":"false","message":"operation failed !!!"}""")
+      case _ => Future.successful("""{"ok":"false","message":"operation successful"}""")
+    }
+  }
+
 }

@@ -2,3 +2,5 @@
 POST    /add                 controllers.EmployController.addEmploy
 
 PUT    /:id/edit                 controllers.EmployController.editEmploy(id: Long)
+
+DELETE /:id/delete        controllers.EmployController.deleteEmploy(id: Long)

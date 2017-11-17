@@ -37,9 +37,9 @@ class EmployController @Inject()(employService: EmployService)(implicit exec: Ex
   }.getOrElse(Future {BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")})
   }
 
-  // http://localhost:9000/api/hrms/v1/employ/:id<for example (2)>/edit
+  // http://localhost:9000/api/hrms/v1/employs/:id<for example (2)>/edit
   //PUT Json=> {"name":"nameTest2","family":"familyTest2","nationalId":"00194000","zipCode":"1025000","phone":"09120000","address":"add-res-test-2","employStatus":"CTO","salary":1000000}
-  def editEmploy(id: Long) = Action.async(parse.json) { request => {
+  def editEmploy(employId: Long) = Action.async(parse.json) { request => {
     for {
       name <- (request.body \ "name").asOpt[String]
       family <- (request.body \ "family").asOpt[String]
@@ -52,7 +52,7 @@ class EmployController @Inject()(employService: EmployService)(implicit exec: Ex
     } yield {
 
       val employ = EmployEntity(
-        id = Some(id),
+        id = Some(employId),
         name = name,
         family = family,
         nationalId = nationalId,
@@ -66,6 +66,13 @@ class EmployController @Inject()(employService: EmployService)(implicit exec: Ex
     }
   }.getOrElse(Future {BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")})
   }
+
+  // http://localhost:9000/api/hrms/v1/employs/:id<for example (2)>/delete
+  //DELETE
+  def deleteEmploy(employId: Long) = Action.async {
+    employService.deleteEmploy(employId).map(Ok(_))
+  }
+
 
 
 }
