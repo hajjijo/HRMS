@@ -1,2 +1,4 @@
 
 POST    /add                 controllers.EmployController.addEmploy
+
+PUT    /:id/edit                 controllers.EmployController.editEmploy(id: Long)
