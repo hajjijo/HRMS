@@ -5,6 +5,10 @@
 # Home page
 GET     /                           controllers.Application.index
 
+GET    /date-test                   controllers.Application.date
+
+GET    /get-date                   controllers.Application.getDate
+
 ->    /api/hrms/v1/employs                          employ.Routes
 
 # Map static resources from the /public folder to the /assets URL path
