@@ -24,6 +24,10 @@ class EmployDao @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
     db.run(employTableQuery.filter(_.id === id).delete)
   }
 
+  def findById(id: Long): Future[Option[EmployEntity]] = {
+    db.run(employTableQuery.filter(_.id ===  id).result.headOption)
+  }
+
   @Singleton
   final class UserTable(tag: Tag) extends Table[EmployEntity](tag, "employs") {
     def name = column[String]("name")

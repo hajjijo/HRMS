@@ -73,6 +73,10 @@ class EmployController @Inject()(employService: EmployService)(implicit exec: Ex
     employService.deleteEmploy(employId).map(Ok(_))
   }
 
-
+  // http://localhost:9000/api/hrms/v1/employs/:id<for example (2)>/get
+  //GET
+  def getEmployById(employId: Long) = Action.async {
+    employService.getById(employId).map(Ok(_))
+  }
 
 }

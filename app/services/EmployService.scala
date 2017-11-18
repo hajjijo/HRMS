@@ -1,8 +1,11 @@
 package services
 
 import javax.inject.Inject
+
 import daos.EmployDao
 import models.EmployEntity
+import play.api.libs.json.{Json, Writes}
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionContext) {
@@ -40,6 +43,30 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
     employDao.delete(employId) flatMap {
       case 0 => Future.successful("""{"ok":"false","message":"operation failed !!!"}""")
       case _ => Future.successful("""{"ok":"false","message":"operation successful"}""")
+    }
+  }
+
+  def getById(employId: Long): Future[String] = {
+
+    implicit val employWrites = new Writes[EmployEntity] {
+      def writes(employEntity: EmployEntity) = Json.obj(
+        "name" -> employEntity.name,
+        "family" -> employEntity.family,
+        "nationalId" -> employEntity.nationalId,
+        "zipCode" -> employEntity.zipCode,
+        "phone" -> employEntity.phone,
+        "address" -> employEntity.address,
+        "employStatus" -> employEntity.employStatus,
+        "salary" -> employEntity.salary,
+        "id" -> employEntity.id
+      )
+    }
+
+    employDao.findById(employId) flatMap {
+      case None => Future.successful("""{"ok":"false","message":"not found!"}""")
+      case Some(employEntity)=>
+        val jsonEmploy = Json.toJson(employEntity)
+        Future.successful(s"""{"ok":"true","result":"$jsonEmploy"}""")
     }
   }
 
