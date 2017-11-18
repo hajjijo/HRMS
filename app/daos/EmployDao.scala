@@ -1,19 +1,19 @@
 package daos
 
 import javax.inject.{Inject, Singleton}
-
 import models.{EmployEntity, EmployFullNameModel, EmploysFullNameModel}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
-
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EmployDao @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit val ex: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
+class EmployDao @Inject()(
+                           protected val dbConfigProvider: DatabaseConfigProvider
+                         )(implicit val ex: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
 
-  val employTableQuery = TableQuery[UserTable]
+  val employTableQuery = TableQuery[EmployTable]
 
   def insert(employEntity: EmployEntity): Future[Long] = {
     db.run(employTableQuery returning employTableQuery.map(_.id) += employEntity)
@@ -49,7 +49,7 @@ class EmployDao @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   }
 
   @Singleton
-  final class UserTable(tag: Tag) extends Table[EmployEntity](tag, "employs") {
+  final class EmployTable(tag: Tag) extends Table[EmployEntity](tag, "employs") {
     def name = column[String]("name")
 
     def family = column[String]("family")
