@@ -3,7 +3,7 @@ package services
 import javax.inject.Inject
 
 import daos.EmployDao
-import models.{EmployEntity, EmployListModel}
+import models.{EmployEntity, EmployFullNameModel, EmployListModel, EmploysFullNameModel}
 import play.api.libs.json.{Json, Writes}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -86,6 +86,32 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
       case employs =>
         val jsonEmploys = Json.toJson(employs)
         Future.successful(s"""{"ok":"true","result":"${jsonEmploys}"}""")
+    }
+  }
+
+  //EmployFullNameModel JSON formatter
+  implicit val employFullNameModelWrites = new Writes[EmployFullNameModel] {
+    def writes(employFullNameModel: EmployFullNameModel) = Json.obj(
+      "id" -> employFullNameModel.id,
+      "name" -> employFullNameModel.name,
+      "family" -> employFullNameModel.family
+    )
+  }
+
+  //EmploysFullNameModel JSON formatter
+  implicit val employsFullNameModelWrites = new Writes[EmploysFullNameModel] {
+    def writes(employsFullNameModel: EmploysFullNameModel) = Json.obj(
+      "fullNames" -> employsFullNameModel.fullNames
+    )
+  }
+
+  def listFullNames: Future[String] = {
+   employDao.fullNames flatMap { employsFullNameModel =>
+     val jsonEmploys = Json.toJson(employsFullNameModel)
+     (employsFullNameModel.fullNames == Nil) match {
+       case true => Future.successful("""{"ok":"false","message":"no employ yet"}""")
+       case false => Future.successful(s"""{"ok":"true","result":"${(jsonEmploys \ "fullNames").get}"}""")
+     }
     }
   }
 

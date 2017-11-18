@@ -79,7 +79,16 @@ class EmployController @Inject()(employService: EmployService)(implicit exec: Ex
     employService.getById(employId).map(Ok(_))
   }
 
+  // http://localhost:9000/api/hrms/v1/employs/get
+  //GET
   def getEmploys = Action.async {
     employService.listAll.map(Ok(_))
   }
+
+  // http://localhost:9000/api/hrms/v1/employs/full-names
+  //GET
+  def fullNames = Action.async {
+    employService.listFullNames.map(Ok(_))
+  }
+
 }

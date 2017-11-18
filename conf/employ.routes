@@ -8,3 +8,5 @@ DELETE /:id/delete                                controllers.EmployController.d
 GET /:id/get                                      controllers.EmployController.getEmployById(id: Long)
 
 GET /get                                          controllers.EmployController.getEmploys
+
+GET /full-names                                    controllers.EmployController.fullNames
