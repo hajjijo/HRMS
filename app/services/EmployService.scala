@@ -3,7 +3,7 @@ package services
 import javax.inject.Inject
 
 import daos.EmployDao
-import models.EmployEntity
+import models.{EmployEntity, EmployListModel}
 import play.api.libs.json.{Json, Writes}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,27 +46,46 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
     }
   }
 
+  // implicit json formatters ...
+  //EmployEntity JSON formatter
+  implicit val employWrites = new Writes[EmployEntity] {
+    def writes(employEntity: EmployEntity) = Json.obj(
+      "name" -> employEntity.name,
+      "family" -> employEntity.family,
+      "nationalId" -> employEntity.nationalId,
+      "zipCode" -> employEntity.zipCode,
+      "phone" -> employEntity.phone,
+      "address" -> employEntity.address,
+      "employStatus" -> employEntity.employStatus,
+      "salary" -> employEntity.salary,
+      "id" -> employEntity.id
+    )
+  }
+
+  //EmployListModel JSON formatter
+  implicit val employsWrites = new Writes[EmployListModel] {
+    def writes(employEntitys: EmployListModel) = Json.obj(
+      "employs" -> employEntitys.employs
+    )
+  }
+
   def getById(employId: Long): Future[String] = {
-
-    implicit val employWrites = new Writes[EmployEntity] {
-      def writes(employEntity: EmployEntity) = Json.obj(
-        "name" -> employEntity.name,
-        "family" -> employEntity.family,
-        "nationalId" -> employEntity.nationalId,
-        "zipCode" -> employEntity.zipCode,
-        "phone" -> employEntity.phone,
-        "address" -> employEntity.address,
-        "employStatus" -> employEntity.employStatus,
-        "salary" -> employEntity.salary,
-        "id" -> employEntity.id
-      )
-    }
-
     employDao.findById(employId) flatMap {
-      case None => Future.successful("""{"ok":"false","message":"not found!"}""")
+      case None =>
+        Future.successful("""{"ok":"false","message":"not found!"}""")
       case Some(employEntity)=>
         val jsonEmploy = Json.toJson(employEntity)
         Future.successful(s"""{"ok":"true","result":"$jsonEmploy"}""")
+    }
+  }
+
+  def listAll: Future[String] = {
+    employDao.all flatMap {
+      case Nil =>
+        Future.successful("""{"ok":"false","message":"no employ yet"}""")
+      case employs =>
+        val jsonEmploys = Json.toJson(employs)
+        Future.successful(s"""{"ok":"true","result":"${jsonEmploys}"}""")
     }
   }
 

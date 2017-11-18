@@ -79,4 +79,7 @@ class EmployController @Inject()(employService: EmployService)(implicit exec: Ex
     employService.getById(employId).map(Ok(_))
   }
 
+  def getEmploys = Action.async {
+    employService.listAll.map(Ok(_))
+  }
 }

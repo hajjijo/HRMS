@@ -6,3 +6,5 @@ PUT    /:id/edit                                  controllers.EmployController.e
 DELETE /:id/delete                                controllers.EmployController.deleteEmploy(id: Long)
 
 GET /:id/get                                      controllers.EmployController.getEmployById(id: Long)
+
+GET /get                                          controllers.EmployController.getEmploys
