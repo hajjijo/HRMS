@@ -16,7 +16,9 @@ class RollCallController @Inject()(rollCallService: RollCallService)(implicit ex
     } yield {
       rollCallService.present(employ_id).map(Ok(_))
     }
-  }.getOrElse(Future {BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")})
+  }.getOrElse(Future {
+    BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")
+  })
   }
 
   //HTTP Methode : PUT - URL : http://localhost:9000/api/hrms/v1/rollcall/exit
@@ -27,7 +29,9 @@ class RollCallController @Inject()(rollCallService: RollCallService)(implicit ex
     } yield {
       rollCallService.exit(employ_id).map(Ok(_))
     }
-  }.getOrElse(Future {BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")})
+  }.getOrElse(Future {
+    BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")
+  })
   }
 
 }

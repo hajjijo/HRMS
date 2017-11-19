@@ -34,7 +34,9 @@ class EmployController @Inject()(employService: EmployService)(implicit exec: Ex
       )
       employService.addEmploy(employ).map(Ok(_))
     }
-  }.getOrElse(Future {BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")})
+  }.getOrElse(Future {
+    BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")
+  })
   }
 
   // http://localhost:9000/api/hrms/v1/employs/:id<for example (2)>/edit
@@ -64,7 +66,9 @@ class EmployController @Inject()(employService: EmployService)(implicit exec: Ex
       )
       employService.editEmploy(employ).map(Ok(_))
     }
-  }.getOrElse(Future {BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")})
+  }.getOrElse(Future {
+    BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")
+  })
   }
 
   // http://localhost:9000/api/hrms/v1/employs/:id<for example (2)>/delete

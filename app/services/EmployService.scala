@@ -64,7 +64,7 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
 
   //EmployListModel JSON formatter
   implicit val employsWrites = new Writes[EmployListModel] {
-    def writes(employEntitys: EmployListModel) = Json.obj(
+    def writes(employEntitys: EmployListModel) = Json.obj (
       "employs" -> employEntitys.employs
     )
   }
@@ -73,7 +73,7 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
     employDao.findById(employId) flatMap {
       case None =>
         Future.successful("""{"ok":"false","message":"not found!"}""")
-      case Some(employEntity)=>
+      case Some(employEntity) =>
         val jsonEmploy = Json.toJson(employEntity)
         Future.successful(s"""{"ok":"true","result":"$jsonEmploy"}""")
     }
