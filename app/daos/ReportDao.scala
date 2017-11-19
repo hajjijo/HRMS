@@ -1,11 +1,9 @@
 package daos
 
 import javax.inject.Inject
-
 import models.RollCallEntity
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReportDao @Inject()(
@@ -13,6 +11,7 @@ class ReportDao @Inject()(
                            val rollCallDao: RollCallDao,
                            protected val dbConfigProvider: DatabaseConfigProvider
                          )(implicit val ex: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
+
   import driver.api._
 
   def getRollCalls: Future[Seq[RollCallEntity]] = {

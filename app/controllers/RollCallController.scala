@@ -3,13 +3,15 @@ package controllers
 import javax.inject.Inject
 import play.api.mvc.{Action, Controller}
 import services.RollCallService
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class RollCallController @Inject()(rollCallService: RollCallService)(implicit exec: ExecutionContext) extends Controller {
 
-  //HTTP Methode : POST - URL : http://localhost:9000/api/hrms/v1/rollcall/present
-  //JSON example : {"employ_id":1}
+  //HTTP method: POST
+  //URL: http://localhost:9000/api/hrms/v1/rollcall/present
+  /*{
+    "employ_id": 1
+  }*/
   def present = Action.async(parse.json) { request => {
     for {
       employ_id <- (request.body \ "employ_id").asOpt[Long]
@@ -21,8 +23,11 @@ class RollCallController @Inject()(rollCallService: RollCallService)(implicit ex
   })
   }
 
-  //HTTP Methode : PUT - URL : http://localhost:9000/api/hrms/v1/rollcall/exit
-  //JSON example : {"employ_id":1}
+  //HTTP method: PUT
+  //URL: http://localhost:9000/api/hrms/v1/rollcall/exit
+  /*{
+    "employ_id": 1
+  }*/
   def exit = Action.async(parse.json) { request => {
     for {
       employ_id <- (request.body \ "employ_id").asOpt[Long]

@@ -6,5 +6,5 @@ case class SumSalaryModel(
                            family: String,
                            in_time: Double,
                            sumSalary: Double
-                           )
+                         )
 

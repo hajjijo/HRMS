@@ -64,7 +64,7 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
 
   //EmployListModel JSON formatter
   implicit val employsWrites = new Writes[EmployListModel] {
-    def writes(employEntitys: EmployListModel) = Json.obj (
+    def writes(employEntitys: EmployListModel) = Json.obj(
       "employs" -> employEntitys.employs
     )
   }
@@ -106,13 +106,13 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
   }
 
   def listFullNames: Future[String] = {
-   employDao.fullNames flatMap { employsFullNameModel =>
-     val jsonEmploys = Json.toJson(employsFullNameModel)
-     (employsFullNameModel.fullNames == Nil) match {
-       case true => Future.successful("""{"ok":"false","message":"no employ yet"}""")
-       case false => Future.successful(s"""{"ok":"true","result":"${(jsonEmploys \ "fullNames").get}"}""")
-       // TODO Kian : Please fix this piece of shit
-     }
+    employDao.fullNames flatMap { employsFullNameModel =>
+      val jsonEmploys = Json.toJson(employsFullNameModel)
+      (employsFullNameModel.fullNames == Nil) match {
+        case true => Future.successful("""{"ok":"false","message":"no employ yet"}""")
+        case false => Future.successful(s"""{"ok":"true","result":"${(jsonEmploys \ "fullNames").get}"}""")
+        // TODO Kian : Please fix this
+      }
     }
   }
 

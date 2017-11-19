@@ -1,11 +1,9 @@
 package services
 
 import javax.inject.Inject
-
 import daos.RollCallDao
 import models.RollCallEntity
 import org.joda.time.DateTime
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class RollCallService @Inject()(rollCallDao: RollCallDao)(implicit val ec: ExecutionContext) {

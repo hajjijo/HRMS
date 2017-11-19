@@ -1,11 +1,9 @@
 package services
 
 import javax.inject.Inject
-
 import daos.ReportDao
 import models.{RollCallEntity, SumSalaryModel}
 import play.api.libs.json.{Json, Writes}
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReportService @Inject()(reportDao: ReportDao)(implicit val ec: ExecutionContext) {
@@ -21,6 +19,7 @@ class ReportService @Inject()(reportDao: ReportDao)(implicit val ec: ExecutionCo
     )
   }
 
+  //TODO Kian: Please fix this block of code ...
   def getSumSalary: Future[String] = {
     reportDao.getRollCalls flatMap {
       case Nil =>
@@ -54,4 +53,3 @@ class ReportService @Inject()(reportDao: ReportDao)(implicit val ec: ExecutionCo
   }
 
 }
-

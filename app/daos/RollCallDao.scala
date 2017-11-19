@@ -10,9 +10,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RollCallDao @Inject()(
-                           val employDao: EmployDao,
-                           protected val dbConfigProvider: DatabaseConfigProvider
+                             val employDao: EmployDao,
+                             protected val dbConfigProvider: DatabaseConfigProvider
                            )(implicit val ex: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
+
   import driver.api._
   val rollCallTableQuery = TableQuery[RollCallTable]
 
@@ -22,7 +23,7 @@ class RollCallDao @Inject()(
 
   //TODO Kian: please fix this method ...
   def findLastPresentByEmployId(employ_id: Long): Future[Option[RollCallEntity]] = {
-    db.run(rollCallTableQuery.filter(_.employ_id === employ_id).size.result) flatMap {size =>
+    db.run(rollCallTableQuery.filter(_.employ_id === employ_id).size.result) flatMap { size =>
       db.run(rollCallTableQuery.filter(_.employ_id === employ_id).drop(size - 1).result.headOption)
     }
   }
@@ -43,7 +44,7 @@ class RollCallDao @Inject()(
       in_date,
       out_date,
       id.?
-      ).shaped <> (RollCallEntity.tupled, RollCallEntity.unapply)
+    ).shaped <> (RollCallEntity.tupled, RollCallEntity.unapply)
 
     def employ = foreignKey("fk_RollCall_EmployId", employ_id, employDao.employTableQuery)(_.id, onDelete = ForeignKeyAction.Cascade)
   }
