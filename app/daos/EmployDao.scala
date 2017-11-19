@@ -36,7 +36,7 @@ class EmployDao @Inject()(
   }
 
   def fullNames: Future[EmploysFullNameModel] = {
-
+    // TODO Kian : Please fix this piece of shit
     val queryResult = db.run(employTableQuery.map(employ => (employ.id, employ.name, employ.family)).result)
 
     queryResult map { tuples =>

@@ -19,11 +19,15 @@ class RollCallController @Inject()(rollCallService: RollCallService)(implicit ex
   }.getOrElse(Future {BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")})
   }
 
-
-
-//  PUT    /:id/absent                   controllers.RollCallController.absent(id: Long)
-//  def absent = Action.async {
-//    rollCallService.get(1).map(Ok(_))
-//  }
+  //HTTP Methode : PUT - URL : http://localhost:9000/api/hrms/v1/rollcall/exit
+  //JSON example : {"employ_id":1}
+  def exit = Action.async(parse.json) { request => {
+    for {
+      employ_id <- (request.body \ "employ_id").asOpt[Long]
+    } yield {
+      rollCallService.exit(employ_id).map(Ok(_))
+    }
+  }.getOrElse(Future {BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")})
+  }
 
 }

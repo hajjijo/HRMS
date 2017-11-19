@@ -111,6 +111,7 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
      (employsFullNameModel.fullNames == Nil) match {
        case true => Future.successful("""{"ok":"false","message":"no employ yet"}""")
        case false => Future.successful(s"""{"ok":"true","result":"${(jsonEmploys \ "fullNames").get}"}""")
+       // TODO Kian : Please fix this piece of shit
      }
     }
   }

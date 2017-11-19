@@ -1,7 +1,6 @@
 package daos
 
 import javax.inject.{Inject, Singleton}
-
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import models.RollCallEntity
 import org.joda.time.DateTime
@@ -21,9 +20,15 @@ class RollCallDao @Inject()(
     db.run(rollCallTableQuery returning rollCallTableQuery.map(_.id) += dateTest)
   }
 
-//  def get(id: Long): Future[Option[RollCallEntity]] = {
-//    db.run(rollCallTableQuery.filter(_.id === id).result.headOption)
-//  }
+  def findLastPresentByEmployId(employ_id: Long): Future[Option[RollCallEntity]] = {
+    db.run(rollCallTableQuery.filter(_.employ_id === employ_id).size.result) flatMap {size =>
+      db.run(rollCallTableQuery.filter(_.employ_id === employ_id).drop(size - 1).result.headOption)
+    }
+  }
+
+  def setExitTime(rollCallEntity: RollCallEntity): Future[Int] = {
+    db.run(rollCallTableQuery.filter(_.id === rollCallEntity.id).update(rollCallEntity))
+  }
 
   @Singleton
   final class RollCallTable(tag: Tag) extends Table[RollCallEntity](tag, "roll_call") {
