@@ -20,6 +20,7 @@ class RollCallDao @Inject()(
     db.run(rollCallTableQuery returning rollCallTableQuery.map(_.id) += dateTest)
   }
 
+  //TODO Kian: please fix this method ...
   def findLastPresentByEmployId(employ_id: Long): Future[Option[RollCallEntity]] = {
     db.run(rollCallTableQuery.filter(_.employ_id === employ_id).size.result) flatMap {size =>
       db.run(rollCallTableQuery.filter(_.employ_id === employ_id).drop(size - 1).result.headOption)
