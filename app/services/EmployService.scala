@@ -17,7 +17,7 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
         case true => Future.successful("""{"ok":"false","message":"please fill the empty fields"}""")
         case false => (employ.salary < 7000) match {
           case true => Future.successful("""{"ok":"false","message":"the employ salary must bigger than employs low"}""")
-          case false => employDao.insert(employ).map(newId => s"""{"ok":"true","message":"operation success full","id":"$newId"}""")
+          case false => employDao.insert(employ).map(newId => s"""{"ok":"true","message":"operation success full","id":$newId}""")
         }
       }
     }
@@ -42,7 +42,7 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
   def deleteEmploy(employId: Long): Future[String] = {
     employDao.delete(employId) flatMap {
       case 0 => Future.successful("""{"ok":"false","message":"operation failed !!!"}""")
-      case _ => Future.successful("""{"ok":"false","message":"operation successful"}""")
+      case _ => Future.successful("""{"ok":"true","message":"operation successful"}""")
     }
   }
 
@@ -75,7 +75,7 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
         Future.successful("""{"ok":"false","message":"not found!"}""")
       case Some(employEntity) =>
         val jsonEmploy = Json.toJson(employEntity)
-        Future.successful(s"""{"ok":"true","result":"$jsonEmploy"}""")
+        Future.successful(s"""{"ok":"true","result":$jsonEmploy}""")
     }
   }
 
@@ -85,7 +85,7 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
         Future.successful("""{"ok":"false","message":"no employ yet"}""")
       case employs =>
         val jsonEmploys = Json.toJson(employs)
-        Future.successful(s"""{"ok":"true","result":"${jsonEmploys}"}""")
+        Future.successful(s"""{"ok":"true","result":${jsonEmploys}}""")
     }
   }
 
@@ -110,7 +110,7 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
       val jsonEmploys = Json.toJson(employsFullNameModel)
       (employsFullNameModel.fullNames == Nil) match {
         case true => Future.successful("""{"ok":"false","message":"no employ yet"}""")
-        case false => Future.successful(s"""{"ok":"true","result":"${(jsonEmploys \ "fullNames").get}"}""")
+        case false => Future.successful(s"""{"ok":"true","result":${(jsonEmploys \ "fullNames").get}}""")
         // TODO Kian : Please fix this
       }
     }

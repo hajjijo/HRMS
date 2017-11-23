@@ -13,18 +13,18 @@ class RollCallService @Inject()(rollCallDao: RollCallDao)(implicit val ec: Execu
 
     rollCallDao.insert(rollCallModel) flatMap {
       case 0 => Future.successful("""{"ok":"false","message":"operation failed !!!"}""")
-      case _ => Future.successful("""{"ok":"true","operation successful ...}""")
+      case _ => Future.successful("""{"ok":"true","message":"operation successful ..."}""")
     }
   }
 
   def exit(employ_id: Long): Future[String] = {
     rollCallDao.findLastPresentByEmployId(employ_id) flatMap {
-      case None => Future.successful("""{"ok":"false","message":"not found !!!"}""")
+      case None => Future.successful("""{"ok":"false","message":"message":"not found !!!"}""")
       case Some(rollCall) =>
         val rollCallEditModel = rollCall.copy(out_date = Some(DateTime.now))
         rollCallDao.setExitTime(rollCallEditModel) flatMap {
           case 0 => Future.successful("""{"ok":"false","message":"operation failed !!!"}""")
-          case _ => Future.successful("""{"ok":"true","operation successful ...}""")
+          case _ => Future.successful("""{"ok":"true","message":"operation successful ..."}""")
         }
 
     }

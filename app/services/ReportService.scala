@@ -14,8 +14,8 @@ class ReportService @Inject()(reportDao: ReportDao)(implicit val ec: ExecutionCo
       "employ_id" -> sumSalaryModel.employ_id,
       "name" -> sumSalaryModel.name,
       "family" -> sumSalaryModel.family,
-      "in_time" -> sumSalaryModel.in_time,
-      "sumSalary" -> sumSalaryModel.sumSalary
+      "sum_time" -> sumSalaryModel.in_time,
+      "sum_salary" -> sumSalaryModel.sumSalary
     )
   }
 
