@@ -68,7 +68,7 @@ class EmployDao @Inject()(
       employStatus,
       salary,
       id.?
-    ).shaped <> (EmployEntity.tupled, EmployEntity.unapply)
+    ).shaped <> ((EmployEntity.apply _).tupled, EmployEntity.unapply)
   }
 
 }

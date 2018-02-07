@@ -1,5 +1,8 @@
 package models
 
+import core.JsonFormatter
+import play.api.libs.json.Json
+
 case class EmployEntity(
                          name: String,
                          family: String,
@@ -11,3 +14,7 @@ case class EmployEntity(
                          salary: Long,
                          id: Option[Long] = None
                        )
+
+object EmployEntity extends JsonFormatter[EmployEntity] {
+  override def formatter = Json.format[EmployEntity]
+}
