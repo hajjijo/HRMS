@@ -1,28 +1,28 @@
 package services
 
 import javax.inject.Inject
-
+import core.utils.SystemMessages
 import daos.EmployDao
 import models.{EmployEntity, EmployFullNameModel, EmployListModel, EmploysFullNameModel}
 import play.api.libs.json.{Json, Writes}
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionContext) {
 
-  def addEmploy(employ: EmployEntity): Future[String] = {
+  def addEmploy(employ: EmployEntity): Future[Either[String, Long]] = {
     (employ.name.isEmpty || employ.family.isEmpty) match {
-      case true => Future.successful("""{"ok":"false","message":"name or family is empty. please fill it"}""")
+      case true => Future.successful(Left(SystemMessages.OperationFailed))
       case false => (employ.nationalId.isEmpty || employ.zipCode.isEmpty || employ.address.isEmpty || employ.employStatus.isEmpty || employ.phone.isEmpty) match {
-        case true => Future.successful("""{"ok":"false","message":"please fill the empty fields"}""")
+        case true => Future.successful(Left(SystemMessages.OperationFailed))
         case false => (employ.salary < 7000) match {
-          case true => Future.successful("""{"ok":"false","message":"the employ salary must bigger than employs low"}""")
-          case false => employDao.insert(employ).map(newId => s"""{"ok":"true","message":"operation success full","id":$newId}""")
+          case true => Future.successful(Left(SystemMessages.OperationFailed))
+          case false => employDao.insert(employ).map(Right(_))
         }
       }
     }
   }
 
+  //TODO => fix under here
   def editEmploy(employ: EmployEntity): Future[String] = {
     (employ.id.isEmpty) match {
       case true => Future.successful("""{"ok":"false","message","id field is empty"}""")
