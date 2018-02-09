@@ -1,2 +1,2 @@
 
-GET  /sum-salary                            controllers.ReportController.sumSalary
+GET  /sum-salary                            report.controllers.ReportController.sumSalary

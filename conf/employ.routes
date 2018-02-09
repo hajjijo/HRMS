@@ -1,2 +1,2 @@
 
-POST    /add                                      controllers.EmployController.addEmploy
+POST    /add                                      employs.controllers.EmployController.addEmploy
