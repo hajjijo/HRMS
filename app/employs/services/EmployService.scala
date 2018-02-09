@@ -2,6 +2,7 @@ package employs.services
 
 import javax.inject.Inject
 
+import core.models.MessageKeyCode
 import core.utils.SystemMessages
 import employs.dao.EmployDao
 import employs.model.{EmployEntity, EmployFullNameModel, EmployListModel, EmploysFullNameModel}
@@ -11,41 +12,22 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionContext) {
 
-  def addEmploy(employ: EmployEntity): Future[Either[String, Long]] = {
-    (employ.name.isEmpty || employ.family.isEmpty) match {
-      case true => Future.successful(Left(SystemMessages.OperationFailed))
-      case false => (employ.nationalId.isEmpty || employ.zipCode.isEmpty || employ.address.isEmpty || employ.employStatus.isEmpty || employ.phone.isEmpty) match {
-        case true => Future.successful(Left(SystemMessages.OperationFailed))
-        case false => (employ.salary < 7000) match {
-          case true => Future.successful(Left(SystemMessages.OperationFailed))
-          case false => employDao.insert(employ).map(Right(_))
-        }
-      }
+  def addEmploy(employ: EmployEntity): Future[Either[Seq[MessageKeyCode], Long]] = {
+    employ.getValidationErrors() match {
+      case Nil => employDao.insert(employ).map(Right(_))
+      case messages => Future.successful(Left(messages))
     }
   }
 
-  //TODO => fix under here
-  def editEmploy(employ: EmployEntity): Future[String] = {
-    (employ.id.isEmpty) match {
-      case true => Future.successful("""{"ok":"false","message","id field is empty"}""")
-      case false => (employ.name.isEmpty || employ.family.isEmpty) match {
-        case true => Future.successful("""{"ok":"false","message":"name or family is empty. please fill it"}""")
-        case false => (employ.nationalId.isEmpty || employ.zipCode.isEmpty || employ.address.isEmpty || employ.employStatus.isEmpty || employ.phone.isEmpty) match {
-          case true => Future.successful("""{"ok":"false","message":"please fill the empty fields"}""")
-          case false => (employ.salary < 7000) match {
-            case true => Future.successful("""{"ok":"false","message":"the employ salary must bigger than employs low"}""")
-            case false => employDao.update(employ).map(many => s"""{"ok":"true","message":"${many} row is edited"}""")
-          }
-        }
-      }
+  def editEmploy(employId: Long, employ: EmployEntity): Future[Either[Seq[MessageKeyCode], Int]] = {
+    employ.getValidationErrors() match {
+      case Nil => employDao.update(employ.copy(id = Some(employId))).map(Right(_))
+      case messages => Future.successful(Left(messages))
     }
   }
 
-  def deleteEmploy(employId: Long): Future[String] = {
-    employDao.delete(employId) flatMap {
-      case 0 => Future.successful("""{"ok":"false","message":"operation failed !!!"}""")
-      case _ => Future.successful("""{"ok":"true","message":"operation successful"}""")
-    }
+  def deleteEmploy(employId: Long): Future[Int] = {
+    employDao.delete(employId)
   }
 
   // implicit json formatters ...
@@ -71,24 +53,12 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
     )
   }
 
-  def getById(employId: Long): Future[String] = {
-    employDao.findById(employId) flatMap {
-      case None =>
-        Future.successful("""{"ok":"false","message":"not found!"}""")
-      case Some(employEntity) =>
-        val jsonEmploy = Json.toJson(employEntity)
-        Future.successful(s"""{"ok":"true","result":$jsonEmploy}""")
-    }
+  def getById(employId: Long): Future[Option[EmployEntity]] = {
+    employDao.findById(employId)
   }
 
-  def listAll: Future[String] = {
-    employDao.all flatMap {
-      case Nil =>
-        Future.successful("""{"ok":"false","message":"no employ yet"}""")
-      case employs =>
-        val jsonEmploys = Json.toJson(employs)
-        Future.successful(s"""{"ok":"true","result":${jsonEmploys}}""")
-    }
+  def listAll: Future[Seq[EmployEntity]] = {
+    employDao.all
   }
 
   //EmployFullNameModel JSON formatter
@@ -107,15 +77,8 @@ class EmployService @Inject()(employDao: EmployDao)(implicit val ec: ExecutionCo
     )
   }
 
-  def listFullNames: Future[String] = {
-    employDao.fullNames flatMap { employsFullNameModel =>
-      val jsonEmploys = Json.toJson(employsFullNameModel)
-      (employsFullNameModel.fullNames == Nil) match {
-        case true => Future.successful("""{"ok":"false","message":"no employ yet"}""")
-        case false => Future.successful(s"""{"ok":"true","result":${(jsonEmploys \ "fullNames").get}}""")
-        // TODO Kian : Please fix this
-      }
-    }
+  def listFullNames: Future[Seq[EmployFullNameModel]] = {
+    employDao.fullNames
   }
 
 }

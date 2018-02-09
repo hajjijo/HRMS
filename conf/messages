@@ -1,4 +1,13 @@
-not.found=موردی یافت نشد
-access.denied=اجازه صادر نشد
-operation.failed=عملیات ناموفق بود
-operation.successful=عملیات موفق بود
+not_found=موردی یافت نشد
+access_denied=اجازه صادر نشد
+operation_failed=عملیات ناموفق بود
+operation_successful=عملیات موفقیت آمیز بود
+name_cannot_be_empty=نام نمیتواند خالی باشد
+family_cannot_be_empty=فیلد فامیلی نمیتواند خالی باشد
+nationalId_cannot_be_empty=کد ملی نمیتواند خالی باشد
+nationalId_unsupported_format=کد ملی اشتباه است
+zip_code_cannot_be_empty=کد پستی نمیتواند خالی باشد
+address_cannot_be_empty=آدرس نمیتواند خالی باشد
+employ_status_cannot_be_empty=جایگاه کارمند نمیتواند خالی باشد
+salary_must_bigger_than_7000_RI=حد اقل حقوق باید بیشتر از ۷۰۰۰ تومان باشد
+phone_cannot_be_empty=شماره تلفن نمیتواند خالی باشد

@@ -1,2 +1,12 @@
 
-POST    /add                                      employs.controllers.EmployController.addEmploy
+POST  /add                                      employs.controllers.EmployController.addEmploy
+
+PUT   /:id/edit                                 employs.controllers.EmployController.editEmploy(id: Long)
+
+DELETE  /:id/delete                             employs.controllers.EmployController.deleteEmploy(id: Long)
+
+GET   /:id/get                                  employs.controllers.EmployController.getEmployById(id: Long)
+
+GET   /get                                      employs.controllers.EmployController.getEmploys
+
+GET   /full-names                               employs.controllers.EmployController.fullNames

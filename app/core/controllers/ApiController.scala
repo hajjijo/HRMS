@@ -96,12 +96,12 @@ trait ApiController extends Controller with I18nSupport with WithExecutionContex
     )
   }
 
+  //What is he doing ???
   private def processResult[A: ClassTag, C](outputFuture: Future[RestResult])(implicit writes: Writes[A]): Future[(Status, JsValue)] = {
     val clazz = implicitly[ClassTag[A]].runtimeClass
     outputFuture map {
       case OkResult(messageResult: MessageResult) => (Ok, Json.toJson(messageResult))
       case OkResult(data) if clazz.isInstance(data) => (Ok, okResult(data.asInstanceOf[A]))
-      case OkResult(str: String) => (Ok, Json.obj("ok" -> s"$str"))
       case failureResult@FailureResult(Seq(MessageInfo(_, SystemMessages.AccessDenied, _))) => (Forbidden, Json.toJson(MessageResult.failure(failureResult)))
       case failureResult: FailureResult => (BadRequest, Json.toJson(MessageResult.failure(failureResult)))
     }

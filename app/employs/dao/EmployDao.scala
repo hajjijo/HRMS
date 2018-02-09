@@ -14,6 +14,7 @@ class EmployDao @Inject()(
                          )(implicit val ex: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
+
   val employTableQuery = TableQuery[EmployTable]
 
   def insert(employEntity: EmployEntity): Future[Long] = {
@@ -36,28 +37,33 @@ class EmployDao @Inject()(
     db.run(employTableQuery.result)
   }
 
-  def fullNames: Future[EmploysFullNameModel] = {
-    // TODO Kian : Please fix this
+  def fullNames: Future[Seq[EmployFullNameModel]] = {
     val queryResult = db.run(employTableQuery.map(employ => (employ.id, employ.name, employ.family)).result)
-
-    queryResult map { tuples =>
-      val employFullNameModel = tuples map { tuple =>
-        EmployFullNameModel.apply(tuple._1, tuple._2, tuple._3)
+    queryResult map { basicEmploys =>
+      basicEmploys map { basicEmploy =>
+          EmployFullNameModel(basicEmploy._1, basicEmploy._2, basicEmploy._3)
       }
-      EmploysFullNameModel(employFullNameModel)
     }
   }
 
   @Singleton
   final class EmployTable(tag: Tag) extends Table[EmployEntity](tag, "employs") {
     def name = column[String]("name")
+
     def family = column[String]("family")
+
     def nationalId = column[String]("nationalId")
+
     def zipCode = column[String]("zipCode")
+
     def phone = column[String]("phone")
+
     def address = column[String]("address")
+
     def employStatus = column[String]("employStatus")
+
     def salary = column[Long]("salary")
+
     def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
 
     def * = (

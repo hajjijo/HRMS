@@ -5,7 +5,7 @@ import javax.inject.Inject
 import core.controllers.ApiController
 import core.models.{FailureResult, MessageResult, OkResult}
 import core.utils.SystemMessages
-import employs.model.EmployEntity
+import employs.model.{EmployEntity, EmployListModel, EmploysFullNameModel}
 import employs.services.EmployService
 import play.api.i18n.MessagesApi
 
@@ -17,8 +17,7 @@ class EmployController @Inject()(
                                   implicit val ec: ExecutionContext
                                 ) extends ApiController {
 
-  //HTTP method: POST
-  //URL: http://localhost:9000/api/hrms/v1/employ/add
+  //POST => http://localhost:9000/api/hrms/v1/employ/add
   /*
   {
   "name": "nameTest",
@@ -33,164 +32,77 @@ class EmployController @Inject()(
   */
   def addEmploy = restAction(EmployEntity, MessageResult) { implicit request =>
     employService.addEmploy(request.model) map {
-      case Left(err) => FailureResult(err)
-      case Right(id) => OkResult(SystemMessages.OperationSuccessful + " - " + id)
+      case Left(errors) => FailureResult(errors.map(_.toMessageInfo))
+      case Right(_) => OkResult(MessageResult.successful)
     } recover {
-      case ex: Throwable => FailureResult(SystemMessages.OperationFailed)
+      case _: Throwable => FailureResult(SystemMessages.OperationFailed)
     }
   }
-//
-//  def x = Action.async(parse.json) { request => {
-//    for {
-//      name <- (request.body \ "name").asOpt[String]
-//      family <- (request.body \ "family").asOpt[String]
-//      nationalId <- (request.body \ "nationalId").asOpt[String]
-//      zipCode <- (request.body \ "zipCode").asOpt[String]
-//      phone <- (request.body \ "phone").asOpt[String]
-//      address <- (request.body \ "address").asOpt[String]
-//      employStatus <- (request.body \ "employStatus").asOpt[String]
-//      salary <- (request.body \ "salary").asOpt[Long]
-//    } yield {
-//      val employ = EmployEntity(
-//        name = name,
-//        family = family,
-//        nationalId = nationalId,
-//        zipCode = zipCode,
-//        phone = phone,
-//        address = address,
-//        employStatus = employStatus,
-//        salary = salary
-//      )
-//      employService.addEmploy(employ).map(Ok(_))
-//    }
-//  }
-//    .getOrElse(
-//      Future {
-//        BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")
-//      }
-//    )
-//  }
-//
 
+  //PUT => http://localhost:9000/api/hrms/v1/employs/1/edit
   /*
-
-   def addEmploy = Action.async(parse.json) { request => {
-    for {
-      name <- (request.body \ "name").asOpt[String]
-      family <- (request.body \ "family").asOpt[String]
-      nationalId <- (request.body \ "nationalId").asOpt[String]
-      zipCode <- (request.body \ "zipCode").asOpt[String]
-      phone <- (request.body \ "phone").asOpt[String]
-      address <- (request.body \ "address").asOpt[String]
-      employStatus <- (request.body \ "employStatus").asOpt[String]
-      salary <- (request.body \ "salary").asOpt[Long]
-    } yield {
-      val employ = EmployEntity(
-        name = name,
-        family = family,
-        nationalId = nationalId,
-        zipCode = zipCode,
-        phone = phone,
-        address = address,
-        employStatus = employStatus,
-        salary = salary
-      )
-      employService.addEmploy(employ).map(Ok(_))
+  {
+  "name": "nameTest2",
+  "family": "familyTest2",
+  "nationalId": "00194000",
+  "zipCode": "1025000",
+  "phone": "09120000",
+  "address": "add-res-test-2",
+  "employStatus": "CTO",
+  "salary": 1000000
+  }
+  */
+  def editEmploy(employId: Long) = restAction(EmployEntity, MessageResult) { implicit request =>
+    employService.editEmploy(employId, request.model) map {
+      case Right(updateCount) => updateCount match {
+        case 0 => FailureResult(SystemMessages.OperationFailed)
+        case _ => OkResult(MessageResult.successful)
+      }
+      case Left(errors) => FailureResult(errors.map(_.toMessageInfo))
+    } recover {
+      case _: Throwable => FailureResult(SystemMessages.OperationFailed)
     }
   }
-    .getOrElse(
-      Future {
-        BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")
-      }
-    )
+
+  //DELETE => http://localhost:9000/api/hrms/v1/employs/1/delete
+  def deleteEmploy(employId: Long) = restAction(MessageResult) { implicit request =>
+    employService.deleteEmploy(employId) map {
+      case 1 => OkResult(MessageResult.successful)
+      case _ => FailureResult(SystemMessages.OperationFailed)
+    } recover {
+      case _: Throwable => FailureResult(SystemMessages.OperationFailed)
+    }
   }
 
-  * */
+  //GET => http://localhost:9000/api/hrms/v1/employs/1/get
+  def getEmployById(employId: Long) = restAction(EmployEntity) { implicit request =>
+    employService.getById(employId) map {
+      case None => FailureResult(SystemMessages.NotFound)
+      case Some(employ) => OkResult(employ)
+    } recover {
+      case _: Throwable => FailureResult(SystemMessages.OperationFailed)
+    }
+  }
 
+  //GET => http://localhost:9000/api/hrms/v1/employs/get
+  //TODO => براش برو یه نگاهی به کد های بخش این بندازPaging __$__ FoodAdminController
+  def getEmploys = restAction(EmployListModel) { implicit request =>
+    employService.listAll map {
+      case Nil => FailureResult(SystemMessages.NotFound)
+      case employs => OkResult(EmployListModel(employs))
+    } recover {
+      case _: Throwable => FailureResult(SystemMessages.OperationFailed)
+    }
+  }
 
-
-
-
-  //
-  //  //HTTP method: PUT
-  //  //URL: http://localhost:9000/api/hrms/v1/employs/1/edit
-  //  /*
-  //  {
-  //  "name": "nameTest2",
-  //  "family": "familyTest2",
-  //  "nationalId": "00194000",
-  //  "zipCode": "1025000",
-  //  "phone": "09120000",
-  //  "address": "add-res-test-2",
-  //  "employStatus": "CTO",
-  //  "salary": 1000000
-  //  }
-  //  */
-  //  def editEmploy(employId: Long) = Action.async(parse.json) { request => {
-  //    for {
-  //      name <- (request.body \ "name").asOpt[String]
-  //      family <- (request.body \ "family").asOpt[String]
-  //      nationalId <- (request.body \ "nationalId").asOpt[String]
-  //      zipCode <- (request.body \ "zipCode").asOpt[String]
-  //      phone <- (request.body \ "phone").asOpt[String]
-  //      address <- (request.body \ "address").asOpt[String]
-  //      employStatus <- (request.body \ "employStatus").asOpt[String]
-  //      salary <- (request.body \ "salary").asOpt[Long]
-  //    } yield {
-  //      val employ = EmployEntity(
-  //        id = Some(employId),
-  //        name = name,
-  //        family = family,
-  //        nationalId = nationalId,
-  //        zipCode = zipCode,
-  //        phone = phone,
-  //        address = address,
-  //        employStatus = employStatus,
-  //        salary = salary
-  //      )
-  //      employService.editEmploy(employ).map(Ok(_))
-  //    }
-  //  }.getOrElse(Future {
-  //    BadRequest(s"""{"ok":"false","message":"Wrong json format"}""")
-  //  })
-  //  }
-  //
-  //  //HTTP method: DELETE
-  //  //URL: http://localhost:9000/api/hrms/v1/employs/1/delete
-  //  def deleteEmploy(employId: Long) = Action.async {
-  //    employService.deleteEmploy(employId).map(Ok(_))
-  //  }
-  //
-  //  //HTTP method: GET
-  //  //URL: http://localhost:9000/api/hrms/v1/employs/1/get
-  //  def getEmployById(employId: Long) = Action.async {
-  //    employService.getById(employId).map(Ok(_))
-  //  }
-  //
-  //  //HTTP method: GET
-  //  //URL: http://localhost:9000/api/hrms/v1/employs/get
-  //  def getEmploys = Action.async {
-  //    employService.listAll.map(Ok(_))
-  //  }
-  //
-  //  //HTTP method: GET
-  //  //URL: http://localhost:9000/api/hrms/v1/employs/full-names
-  //  def fullNames = Action.async {
-  //    employService.listFullNames.map(Ok(_))
-  //  }
+  //GET => http://localhost:9000/api/hrms/v1/employs/full-names
+  def fullNames = restAction(EmploysFullNameModel) { implicit request =>
+    employService.listFullNames map {
+      case Nil => FailureResult(SystemMessages.NotFound)
+      case fullNames => OkResult(fullNames)
+    } recover {
+      case _: Throwable => FailureResult(SystemMessages.OperationFailed)
+    }
+  }
 
 }
-
-
-/*
-*
-PUT    /:id/edit                                  employs.controller.EmployController.editEmploy(id: Long)
-
-DELETE /:id/delete                                employs.controller.EmployController.deleteEmploy(id: Long)
-
-GET /:id/get                                      employs.controller.EmployController.getEmployById(id: Long)
-
-GET /get                                          employs.controller.EmployController.getEmploys
-
-GET /full-names                                    employs.controller.EmployController.fullNames
-* */

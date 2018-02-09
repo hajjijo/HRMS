@@ -1,6 +1,6 @@
 package core.models
 
-import core.utils.JsonFormatter
+import core.utils.{JsonFormatter, SystemMessages}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 
@@ -26,6 +26,7 @@ object MessageInfo {
 
 object MessageResult extends JsonFormatter[MessageResult] {
   implicit val formatter = Json.format[MessageResult]
+  def successful(implicit messages: Messages) = MessageResult(true, Seq(MessageInfo.from(SystemMessages.OperationSuccessful)))
   def success(code: String)(implicit messages: Messages) = MessageResult(true, Seq(MessageInfo.from(code)))
   def failure(failureResult: FailureResult) = MessageResult(false, failureResult.messages)
 }
